@@ -5,10 +5,18 @@ import { AiOutlineSearch } from 'react-icons/ai'
 import Accordion from '../components/Accordion'
 import Content from '../components/Content'
 import Appcontext from '../context/Appcontext'
+import { getPostOne } from '../common/common.function'
+import PostWrap from '../components/PostWrap'
 
 function Main() {
   const [selected, setSelected] = useState(null)
-  const { selectedPost, postData, openPost } = useContext(Appcontext)
+  const {
+    selectedPost,
+    postData,
+    openPost,
+    setSelectedPost,
+    setOpenPost,
+  } = useContext(Appcontext)
 
   const listArr = [
     {
@@ -16,8 +24,18 @@ function Main() {
       path: 'EXPLORER',
       content: (
         <>
-          <Accordion title="OPEN POSTS" isBold={true}>
-            내요요요옹
+          <Accordion title="OPEN POSTS" isBold={true} initialExpanded={true}>
+            {openPost.map((one, index) => {
+              const data = getPostOne(postData, one)
+              return (
+                <PostWrap
+                  path={data.path}
+                  title={data.title}
+                  key={index}
+                  isClose={true}
+                />
+              )
+            })}
           </Accordion>
           <Accordion title="VSCODE" isBold={true}>
             {postData.map((one, index) => (
@@ -56,15 +74,90 @@ function Main() {
           {listArr[selected].content}
         </LeftContent>
       )}
-      <RightContent>
-        {JSON.stringify(openPost)}
-        {selectedPost}
-      </RightContent>
+      <RightWrap selected={selected}>
+        <RightHeader>
+          {openPost.map((one, index) => {
+            const data = getPostOne(postData, one)
+
+            return (
+              <div
+                className={selectedPost === one ? 'selected' : ''}
+                onClick={() => {
+                  setSelectedPost(data.path)
+                }}
+                key={index}
+              >
+                📝{data.title}
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const openPostFilter = openPost.filter(
+                      (one) => one !== data.path,
+                    )
+                    setOpenPost(openPost.filter((one) => one !== data.path))
+
+                    setSelectedPost(
+                      openPostFilter.length !== 0
+                        ? openPostFilter[0].path
+                        : null,
+                    )
+                  }}
+                >
+                  x
+                </span>
+              </div>
+            )
+          })}
+        </RightHeader>
+        <RightContent selected={selected}>{selectedPost}</RightContent>
+      </RightWrap>
     </Wrap>
   )
 }
 
 export default Main
+
+const RightHeader = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  overflow-x: scroll;
+  background-color: ${({ theme }) => theme.color.secondary};
+  > div {
+    width: 150px;
+    min-width: 150px;
+    padding: 5px 10px;
+    background-color: ${({ theme }) => theme.color.secondary};
+    border-right: 2px solid #1e1e1e;
+    position: relative;
+    cursor: pointer;
+    &.selected {
+      background-color: ${({ theme }) => theme.color.primary};
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    &:hover::-webkit-scrollbar {
+      display: block;
+    }
+
+    &:not(.selected) > span {
+      display: none;
+    }
+
+    &:hover > span {
+      display: block;
+    }
+
+    > span {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+    }
+  }
+`
 
 const IconWrap = styled.div`
   display: flex;
@@ -72,10 +165,12 @@ const IconWrap = styled.div`
   padding: 10px 0;
   cursor: pointer;
 
-  border-left: ${({ selected }) => (selected ? 2 : 0)}px solid white;
+  border-left: ${({ theme, selected }) => (selected ? 2 : 0)}px solid
+    ${({ theme }) => theme.color.text};
 
   > svg {
-    color: ${({ selected }) => (selected ? 'white' : '#7a7a7a')};
+    color: ${({ theme, selected }) =>
+      selected ? theme.color.text : '#7a7a7a'};
   }
 `
 
@@ -86,23 +181,42 @@ const Wrap = styled.div`
 
 const LeftBar = styled.div`
   width: 50px;
+  min-width: 50px;
   height: 100%;
   background-color: #333333;
-  min-width: 50px;
+  background-color: ${({ theme }) => theme.color.third};
 `
 
 const LeftContent = styled.div`
   width: 320px;
+  min-width: 320px;
   height: 100%;
   background-color: #252526;
   padding: 10px;
+  background-color: ${({ theme }) => theme.color.secondary};
 
   > p {
     padding-bottom: 10px;
     color: #7a7a7a;
   }
+
+  @media (max-width: 540px) {
+    width: 100%;
+  }
 `
+
 const RightContent = styled.div`
-  width: 100%;
   background-color: #1e1e1e;
+  width: 100%;
+  height: calc(100% - 50px);
+  background-color: ${({ theme }) => theme.color.primary};
+`
+
+const RightWrap = styled.div`
+  width: ${({ selected }) =>
+    selected === null ? 'calc(100% - 50px)' : 'calc(100% - 320px - 50px)'};
+
+  @media (max-width: 520px) {
+    display: ${({ selected }) => (selected === null ? 'block' : 'none')};
+  }
 `

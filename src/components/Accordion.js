@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { VscChevronRight, VscChevronDown } from 'react-icons/vsc'
 
-export default function Accordion({ title, children, isbold }) {
-  const [expended, setExpended] = useState(false)
+function Accordion({ title, children, isBold, initialExpanded }) {
+  const [expended, setExpended] = useState(initialExpanded || false)
+
   return (
     <>
       <AccordionWrap
@@ -12,28 +13,40 @@ export default function Accordion({ title, children, isbold }) {
         }}
       >
         {expended ? <VscChevronDown /> : <VscChevronRight />}
-        <span>{isbold ? <strong>{title}</strong> : title}</span>
+        <span>{title ? <strong>{title}</strong> : title}</span>
       </AccordionWrap>
-      {expended && <AccordionContentWrap>{children}</AccordionContentWrap>}
+      {
+        <AccordionContentWrap expended={expended}>
+          {children}
+        </AccordionContentWrap>
+      }
     </>
   )
 }
+
+export default Accordion
 
 const AccordionWrap = styled.div`
   display: flex;
   align-items: center;
   color: white;
   font-size: 0.8rem;
-  padding: 5px 0;
+  padding: 4px 0px;
+
   cursor: pointer;
 
   > span {
-    padding-left: 5px;
-    user-select: none;
+    padding-left: 2px;
   }
 `
+
 const AccordionContentWrap = styled.div`
+  max-height: ${({ expended }) => (expended ? '500px' : '0')};
+  overflow: hidden;
+  transition: ${({ expended }) =>
+    expended ? 'max-height 0.25s ease-in' : 'max-height 0.15s ease-out'};
+
   user-select: none;
-  padding-top: 5px;
-  padding-left: 15px;
+  margin-bottom: 5px;
+  margin-left: 15px;
 `
