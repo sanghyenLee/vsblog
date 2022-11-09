@@ -10,3 +10,16 @@ export const darkTheme = {
     text: 'red',
   },
 }
+
+export const lightTheme = {
+  color: {
+    primary: '#white',
+    secondary: 'white',
+    third: 'white',
+
+    selected: 'white',
+    hover: 'white',
+
+    text: 'black',
+  },
+}

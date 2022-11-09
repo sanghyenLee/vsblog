@@ -11,6 +11,8 @@ import PostWrap from '../components/PostWrap'
 function Main() {
   const [selected, setSelected] = useState(null)
   const {
+    Theme,
+    setTheme,
     selectedPost,
     postData,
     openPost,
@@ -55,17 +57,28 @@ function Main() {
   return (
     <Wrap>
       <LeftBar>
-        {listArr.map((one, index) => (
-          <IconWrap
-            selected={selected === index}
+        <div>
+          {listArr.map((one, index) => (
+            <IconWrap
+              selected={selected === index}
+              onClick={() => {
+                setSelected(selected === index ? null : index)
+              }}
+              key={index}
+            >
+              {one.icon}
+            </IconWrap>
+          ))}
+        </div>
+        <div>
+          <button
             onClick={() => {
-              setSelected(selected === index ? null : index)
+              setTheme(Theme === 'dark' ? 'light' : 'dark')
             }}
-            key={index}
           >
-            {one.icon}
-          </IconWrap>
-        ))}
+            테마 변경
+          </button>
+        </div>
       </LeftBar>
 
       {selected !== null && listArr[selected] && (
@@ -97,9 +110,7 @@ function Main() {
                     setOpenPost(openPost.filter((one) => one !== data.path))
 
                     setSelectedPost(
-                      openPostFilter.length !== 0
-                        ? openPostFilter[0].path
-                        : null,
+                      openPostFilter.length !== 0 ? openPostFilter[0] : null,
                     )
                   }}
                 >
@@ -123,23 +134,23 @@ const RightHeader = styled.div`
   display: flex;
   overflow-x: scroll;
   background-color: ${({ theme }) => theme.color.secondary};
+
   > div {
     width: 150px;
     min-width: 150px;
     padding: 5px 10px;
-    background-color: ${({ theme }) => theme.color.secondary};
+    background-color: #${({ theme }) => theme.color.secondary};
     border-right: 2px solid #1e1e1e;
     position: relative;
     cursor: pointer;
     &.selected {
       background-color: ${({ theme }) => theme.color.primary};
     }
-
-    ::-webkit-scrollbar {
+    ::-webkit-scrollbar-thumb {
       display: none;
     }
 
-    &:hover::-webkit-scrollbar {
+    &:hover::-webkit-scrollbar-thumb {
       display: block;
     }
 
@@ -165,8 +176,8 @@ const IconWrap = styled.div`
   padding: 10px 0;
   cursor: pointer;
 
-  border-left: ${({ theme, selected }) => (selected ? 2 : 0)}px solid
-    ${({ theme }) => theme.color.text};
+  border-left: ${({ theme, selected }) =>
+    `${selected ? 2 : 0}px solid ${theme.color.text}`};
 
   > svg {
     color: ${({ theme, selected }) =>
@@ -183,21 +194,26 @@ const LeftBar = styled.div`
   width: 50px;
   min-width: 50px;
   height: 100%;
-  background-color: #333333;
   background-color: ${({ theme }) => theme.color.third};
+
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  > div:last-child {
+    padding-bottom: 30px;
+  }
 `
 
 const LeftContent = styled.div`
   width: 320px;
   min-width: 320px;
   height: 100%;
-  background-color: #252526;
-  padding: 10px;
   background-color: ${({ theme }) => theme.color.secondary};
+  padding: 10px;
 
   > p {
     padding-bottom: 10px;
-    color: #7a7a7a;
+    color: #${({ theme }) => theme.color.hover};
   }
 
   @media (max-width: 540px) {
@@ -206,7 +222,6 @@ const LeftContent = styled.div`
 `
 
 const RightContent = styled.div`
-  background-color: #1e1e1e;
   width: 100%;
   height: calc(100% - 50px);
   background-color: ${({ theme }) => theme.color.primary};

@@ -1,12 +1,18 @@
 import React from 'react'
-export default React.createContext({
-  selectedPost: 'test',
-  setSelectPost: () => {},
 
-  // 열려있는 게시물
+export default React.createContext({
+  //현재 선택된 게시물
+  selectedPost: '',
+  setSelectedPost: () => {},
+
+  //열여있는 게시물
   openPost: [],
   setOpenPost: () => {},
 
+  //게시물 데이터
   postData: [],
-  setPostData: () => {},
+
+  //테마 관련
+  theme: '',
+  setTheme: () => {},
 })

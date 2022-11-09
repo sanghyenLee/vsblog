@@ -7,8 +7,8 @@ import {
 import Main from './pages/Main'
 import AppContext from './context/Appcontext'
 import { useEffect, useState } from 'react'
-import { ThemeContext, ThemeProvider } from 'styled-components'
-import { darkTheme } from './style/theme'
+import { ThemeProvider } from 'styled-components'
+import { darkTheme, lightTheme } from './style/theme'
 import { GlobalStyle } from './style/GlobalStyle'
 
 const router = createBrowserRouter(
@@ -24,6 +24,7 @@ function App() {
   const [selectedPost, setSelectedPost] = useState('')
   const [postData, setPostData] = useState([])
   const [openPost, setOpenPost] = useState([])
+  const [Theme, setTheme] = useState('dark')
 
   useEffect(() => {
     setPostData([
@@ -62,7 +63,7 @@ function App() {
               {
                 type: 'post',
                 title: 'Tech33',
-                path: '/Tech/Tech3/Tech33',
+                path: '/Tech/Tech3/Tech34',
               },
               {
                 type: 'post',
@@ -106,9 +107,12 @@ function App() {
         setOpenPost,
 
         postData,
+
+        Theme,
+        setTheme,
       }}
     >
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={Theme === 'dark' ? darkTheme : lightTheme}>
         <GlobalStyle />
         <RouterProvider router={router} />
       </ThemeProvider>
